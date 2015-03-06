@@ -24,24 +24,33 @@ class Obsess:
     def test_endpoint(self, url):
         print 'Testing ', url['name']
         data = self.load_data_from_endpoint(url['endpoint'])
+        if data==None:
+            return
         if len(data)==0:
             if url['empty_ok']==True:
                 return
             else:
-                print 'Got empty array'
+                print 'Error: Got empty array'
                 return
         if url['array']==True:
             if url['test_all']==True:
                 for i in range(0, len(data)):
                     self.check_has(data[i], url['must_have'])
-                    self.check_child_has(data[i], url['child_must_have'])
+                    if 'child_must_have' in url:
+                        self.check_child_has(data[i], url['child_must_have'])
+                    self.follow(url, data[i])
+                            
             else:
                 i = random.randint(0, len(data) - 1)
                 self.check_has(data[i], url['must_have'])
-                self.check_child_has(data[i], url['child_must_have'])
+                if 'child_must_have' in url:
+                    self.check_child_has(data[i], url['child_must_have'])
+                self.follow(url, data[i])
         else:
             self.check_has(data, url['must_have'])
-            self.check_child_has(data, url['child_must_have'])
+            if 'child_must_have' in url:
+                self.check_child_has(data, url['child_must_have'])
+            self.follow(url, data)
         
     def load_data_from_endpoint(self, endpoint):
         print 'Accessing endpoint ', self.base_url + endpoint
@@ -49,9 +58,13 @@ class Obsess:
         try:
             response = urlopen(request)
             data = response.read()
-            return json.loads(data)
+            try:
+                return json.loads(data)
+            except ValueError, error:
+                print 'Error: Did not get valid data'
+                return None
         except URLError, e:
-            print 'Could not access url:', self.base_url + endpoint, 'Got an error code:', e
+            print 'Error: Could not access url:', self.base_url + endpoint, 'Got an error code:', e
             
     def check_has(self, data, fields):
         for field in fields:
@@ -79,6 +92,13 @@ class Obsess:
                         self.check_child_has(data[i], one_cond['child_must_have'])
             else:
                 print 'Error: ', one_cond['child'], ' is not present in ', full_data
+                
+    def follow(self, url, data):
+        if 'follow' in url and len(url['follow']) > 0:
+            for f in url['follow']:
+                for p in f['parameters']:
+                    f['endpoint'] = f['pattern'].replace('{{'+p+'}}', str(data[p]))
+                self.test_endpoint(f)
                 
                 
 if __name__ == '__main__':

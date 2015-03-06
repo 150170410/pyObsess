@@ -35,6 +35,43 @@
                         "must_have" : ["id", "name", "root", "parentCategoryId"]
                     }
                 ]
+            },
+            {
+                "name" : "Search",
+                "description" : "Seach for location or leader",
+                "endpoint" : "/search?q=arvind",
+                "must_have" : ["id", "name", "type", "subType", "partyName", "cName"],
+                "array" : true,
+                "empty_ok" : true,
+                "test_all" : true,
+                "follow" : [
+                    {
+                        "name" : "Leader url",
+                        "description" : "Get leader by ID",
+                        "parameters" : ["id"],
+                        "pattern" : "/leader/{{id}}",
+                        "must_have" : ["id", "name", "location", "politicalAdminType", "profilePhoto", "party"],
+                        "array" : false,
+                        "empty_ok" : false,
+                        "test_all" : false,
+                        "child_must_have" : [
+                            {
+                                "child" : "politicalAdminType",
+                                "array" : false,
+                                "empty_ok" : false,
+                                "test_all" : false,
+                                "must_have" : ["id", "name", "shortName"]
+                            },
+                            {
+                                "child" : "party",
+                                "array" : false,
+                                "empty_ok" : false,
+                                "test_all" : false,
+                                "must_have" : ["id", "name", "shortName"]
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     }
