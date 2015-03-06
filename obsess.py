@@ -6,6 +6,8 @@ import json, thread, random, sys, time, smtplib
 class Obsess:
     def run(self, f):
         self.sys_stdout = sys.stdout
+        self.error = False
+        self.notified = False
         #sys.stdout = self.stdout = StringIO()
         self.stdout = StringIO()
         #Read the config file provided by user
@@ -19,19 +21,15 @@ class Obsess:
     def schedule_and_run(self, test):
         print >>self.stdout, 'Running test ', test['name']
         print >>self.stdout, 'This test will run every', test['interval'], ' seconds'
-        self.error = False
-        self.notified = False
         for base in test['base_url']:
             self.base_url = base
             for url in test['urls']:
                 self.test_endpoint(url)
-        print self.stdout.getvalue()
         if self.error==False:
             self.notified = False
         if self.error==True and test['notification']['enable']==True:
             if 'email' in test['notification'] and test['notification']['email']['enable']==True and self.notified==False:
-                self.send_email(test['notification']['email'])
-                self.notified = True
+                self.notified = self.send_email(test['notification']['email'])
         if test['periodic']==True:
             self.error = False
             self.stdout.truncate(0)
@@ -118,7 +116,10 @@ class Obsess:
         if 'follow' in url and len(url['follow']) > 0:
             for f in url['follow']:
                 for p in f['parameters']:
-                    f['endpoint'] = f['pattern'].replace('{{'+p+'}}', str(data[p]))
+                    if p['parent'] == None:
+                        f['endpoint'] = f['pattern'].replace('{{'+p['id']+'}}', str(data[p['id']]))
+                    else:
+                        f['endpoint'] = f['pattern'].replace('{{'+p['id']+'}}', str(data[p['parent']][p['id']]))
                 self.test_endpoint(f)
                 
     def send_email(self, email):
@@ -143,8 +144,10 @@ class Obsess:
             #server.quit()
             server.close()
             print 'Successfully sent the mail'
-        except:
-            print "Failed to send mail"
+            return True
+        except Exception as e:
+            print "Failed to send mail. Error = ", e
+            return False
                 
                 
 if __name__ == '__main__':

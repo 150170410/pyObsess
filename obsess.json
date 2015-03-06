@@ -3,14 +3,14 @@
         "name" : "eSwaraj",
         "description" : "Test all APIs for eSwaraj",
         "periodic" : true,
-        "interval" : 60,
+        "interval" : 300,
         "notification" : {
             "enable" : true,
             "email" : {
                 "enable" : true,
                 "email_id" : "eswaraj.india@gmail.com",
                 "email_password" : "eswaraj.india1984",
-                "email_to" : ["vaibhavsinh@gmail.com"]
+                "email_to" : ["vaibhavsinh@gmail.com", "ping2ravi@gmail.com"]
             },
             "sms" : {
                 "enable" : true
@@ -47,13 +47,31 @@
                 "follow" : [
                     {
                         "name" : "Leader url",
+                        "description" : "Get promises by leader ID",
+                        "parameters" : [
+                            {
+                                "id" : "id",
+                                "parent" : null
+                            }
+                        ],
+                        "pattern" : "/promises/{{id}}",
+                        "must_have" : ["id", "title", "description"],
+                        "array" : true,
+                        "empty_ok" : true,
+                        "test_all" : true
+                    },
+                    {
+                        "name" : "Leader url",
                         "description" : "Get leader by ID",
-                        "parameters" : ["id"],
+                        "parameters" : [
+                            {
+                                "id" : "id",
+                                "parent" : null
+                            }
+                        ],
                         "pattern" : "/leader/{{id}}",
                         "must_have" : ["id", "name", "location", "politicalAdminType", "profilePhoto", "party"],
                         "array" : false,
-                        "empty_ok" : false,
-                        "test_all" : false,
                         "child_must_have" : [
                             {
                                 "child" : "politicalAdminType",
@@ -68,6 +86,179 @@
                                 "empty_ok" : false,
                                 "test_all" : false,
                                 "must_have" : ["id", "name", "shortName"]
+                            },
+                            {
+                                "child" : "location",
+                                "array" : false,
+                                "empty_ok" : false,
+                                "test_all" : false,
+                                "must_have" : ["id", "name"]
+                            }
+                        ],
+                        "follow" : [
+                            {
+                                "name" : "Location url",
+                                "description" : "Get location by ID",
+                                "parameters" : [
+                                    {
+                                        "id" : "id",
+                                        "parent" : "location"
+                                    }
+                                ],
+                                "pattern" : "/location/{{id}}",
+                                "must_have" : ["id", "name", "locationType"],
+                                "array" : false
+                            },
+                            {
+                                "name" : "Location complaints url",
+                                "description" : "Get complaints by location ID",
+                                "parameters" : [
+                                    {
+                                        "id" : "id",
+                                        "parent" : "location"
+                                    }
+                                ],
+                                "pattern" : "/complaint/location/{{id}}?start=0&count=10",
+                                "must_have" : ["id", "complaintTime", "lattitude", "longitude", "status", "categories", "locations", "createdBy"],
+                                "array" : true,
+                                "empty_ok" : true,
+                                "test_all" : true,
+                                "child_must_have" : [
+                                    {
+                                        "child" : "categories",
+                                        "array" : true,
+                                        "empty_ok" : false,
+                                        "test_all" : true,
+                                        "must_have" : ["id", "name", "root"]
+                                    },
+                                    {
+                                        "child" : "locations",
+                                        "array" : true,
+                                        "empty_ok" : false,
+                                        "test_all" : true,
+                                        "must_have" : ["name"]
+                                    },
+                                    {
+                                        "child" : "createdBy",
+                                        "array" : true,
+                                        "empty_ok" : false,
+                                        "test_all" : true,
+                                        "must_have" : ["id", "name", "profilePhoto"]
+                                    }
+                                ],
+                                "follow" : [
+                                    {
+                                        "name" : "Complaint url",
+                                        "description" : "Get complaint by ID",
+                                        "parameters" : [
+                                            {
+                                                "id" : "id",
+                                                "parent" : null
+                                            }
+                                        ],
+                                        "pattern" : "/complaint/{{id}}",
+                                        "must_have" : ["id", "complaintTime", "lattitude", "longitude", "status", "categories", "locations", "createdBy"],
+                                        "array" : false,
+                                        "child_must_have" : [
+                                            {
+                                                "child" : "categories",
+                                                "array" : true,
+                                                "empty_ok" : false,
+                                                "test_all" : true,
+                                                "must_have" : ["id", "name", "root"]
+                                            },
+                                            {
+                                                "child" : "locations",
+                                                "array" : true,
+                                                "empty_ok" : false,
+                                                "test_all" : true,
+                                                "must_have" : ["name"]
+                                            },
+                                            {
+                                                "child" : "createdBy",
+                                                "array" : true,
+                                                "empty_ok" : false,
+                                                "test_all" : true,
+                                                "must_have" : ["id", "name", "profilePhoto"]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name" : "Comments url",
+                                        "description" : "Get comments by complaint ID",
+                                        "parameters" : [
+                                            {
+                                                "id" : "id",
+                                                "parent" : null
+                                            }
+                                        ],
+                                        "pattern" : "/complaint/{{id}}/comments?count=10&start=0&order=DESC",
+                                        "must_have" : ["id", "creationTime", "text", "adminComment", "postedBy"],
+                                        "array" : true,
+                                        "empty_ok" : true,
+                                        "test_all" : true,
+                                        "child_must_have" : [
+                                            {
+                                                "child" : "postedBy",
+                                                "array" : false,
+                                                "must_have" : ["id", "name", "profilePhoto"]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name" : "Leaders for location url",
+                                "description" : "Get leaders by location ID",
+                                "parameters" : [
+                                    {
+                                        "id" : "id",
+                                        "parent" : "location"
+                                    }
+                                ],
+                                "pattern" : "/leaders/location/{{id}}",
+                                "must_have" : ["id", "name", "location", "politicalAdminType", "profilePhoto", "party"],
+                                "array" : true,
+                                "empty_ok" : false,
+                                "test_all" : true,
+                                "child_must_have" : [
+                                    {
+                                        "child" : "politicalAdminType",
+                                        "array" : false,
+                                        "empty_ok" : false,
+                                        "test_all" : false,
+                                        "must_have" : ["id", "name", "shortName"]
+                                    },
+                                    {
+                                        "child" : "party",
+                                        "array" : false,
+                                        "empty_ok" : false,
+                                        "test_all" : false,
+                                        "must_have" : ["id", "name", "shortName"]
+                                    },
+                                    {
+                                        "child" : "location",
+                                        "array" : false,
+                                        "empty_ok" : false,
+                                        "test_all" : false,
+                                        "must_have" : ["id", "name"]
+                                    }
+                                ]
+                            },
+                            {
+                                "name" : "Counters for location url",
+                                "description" : "Get counters by location ID",
+                                "parameters" : [
+                                    {
+                                        "id" : "id",
+                                        "parent" : "location"
+                                    }
+                                ],
+                                "pattern" : "/stats/counter/location/{{id}}",
+                                "must_have" : ["id", "name", "count"],
+                                "array" : true,
+                                "empty_ok" : false,
+                                "test_all" : true
                             }
                         ]
                     }
