@@ -8,15 +8,15 @@
             "enable" : true,
             "email" : {
                 "enable" : true,
-                "email_id" : "",
-                "email_password" : "",
+                "email_id" : "eswaraj.india@gmail.com",
+                "email_password" : "eswaraj.india1984",
                 "email_to" : ["vaibhavsinh@gmail.com"]
             },
             "sms" : {
                 "enable" : true
             }
         },
-        "base_url" : "http://dev.api.eswaraj.com/api/v0",
+        "base_url" : ["http://dev.api.eswaraj.com/api/v0", "http://api.eswaraj.com/api/v0"],
         "urls" : [
             {
                 "name" : "Categories url",
