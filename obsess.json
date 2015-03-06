@@ -1,0 +1,41 @@
+[
+    {
+        "name" : "eSwaraj",
+        "description" : "Test all APIs for eSwaraj",
+        "periodic" : true,
+        "interval" : 60,
+        "notification" : {
+            "enable" : true,
+            "email" : {
+                "enable" : true,
+                "email_id" : "",
+                "email_password" : "",
+                "email_to" : ["vaibhavsinh@gmail.com"]
+            },
+            "sms" : {
+                "enable" : true
+            }
+        },
+        "base_url" : "http://dev.api.eswaraj.com/api/v0",
+        "urls" : [
+            {
+                "name" : "Categories url",
+                "description" : "Lists all categories and their details",
+                "endpoint" : "/categories",
+                "must_have" : ["id", "name", "root", "imageUrl", "headerImageUrl", "childCategories"],
+                "array" : true,
+                "empty_ok" : false,
+                "test_all" : true,
+                "child_must_have" : [
+                    {
+                        "child" : "childCategories",
+                        "array" : true,
+                        "empty_ok" : false,
+                        "test_all" : true,
+                        "must_have" : ["id", "name", "root", "parentCategoryId"]
+                    }
+                ]
+            }
+        ]
+    }
+]
