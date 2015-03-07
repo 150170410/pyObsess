@@ -50,6 +50,13 @@ class Obsess:
         if url['array']==True:
             if url['test_all']==True:
                 for i in range(0, len(data)):
+                    skip = False
+                    if 'filter_by' in url:
+                        for check in url['filter_by']:
+                            if not data[i][check['field']] == check['value']:
+                                skip = True
+                    if skip == True:
+                        continue
                     self.check_has(data[i], url['must_have'])
                     if 'child_must_have' in url:
                         self.check_child_has(data[i], url['child_must_have'])

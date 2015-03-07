@@ -44,6 +44,12 @@
                 "array" : true,
                 "empty_ok" : true,
                 "test_all" : true,
+                "filter_by" : [
+                    {
+                        "field" : "type",
+                        "value" : "Leader"
+                    }
+                ],
                 "follow" : [
                     {
                         "name" : "Leader url",
